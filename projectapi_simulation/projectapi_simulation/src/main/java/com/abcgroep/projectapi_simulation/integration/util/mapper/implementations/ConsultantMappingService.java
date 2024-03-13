@@ -1,73 +1,72 @@
-/*
 package com.abcgroep.projectapi_simulation.integration.util.mapper.implementations;
 
 import com.abcgroep.projectapi_simulation.application.entities.Consultant;
 import com.abcgroep.projectapi_simulation.application.repositories.ConsultantRepository;
-
+import com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers.ConsultantMapper;
 import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
-import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.MappingService;
 import com.abcgroep.projectapi_simulation.integration.util.repositories.ExternalEntityRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 
 
 @Service
 public class ConsultantMappingService implements GenericMappingService<Consultant> {
     @Autowired
     @Qualifier("externalConsultantService")
-    private ExternalEntityRepository externalConsultantRepository;
 
+    private ExternalEntityRepository externalConsultantRepository;
     @Autowired
     private ConsultantRepository consultantRepository;
+    private final Logger logger = LoggerFactory.getLogger(TimesheetMappingService.class);
+    private boolean mappingInitialized = false;
+
+
 
     @Override
-    public List<Consultant> mapStudents() {
-        return null;
-    }
-
-    @Override
-    public boolean areStudentsSaved() {
-        return false;
-    }
-
-
-
-        @Override
-    public List<Consultant> mapData(List<Map<String, Object>> rawData) {
-        List<Map<String, Object>> rows = externalConsultantRepository.findAll();
-        List<Consultant> consultants = new ArrayList<>();
-
-        for (Map<String, Object> row : rows) {
-            Consultant consultant = mapRowToConsultant(row);
-            consultants.add(consultant);
-        }
-
-        if (!consultants.isEmpty()) {
-            // Markeer de mapping als geïnitialiseerd
-
+    public List<Consultant> mapData() {
+        if (!mappingInitialized && !areEntitiesAlreadyMapped()) {
+            List<Map<String, Object>> rows = externalConsultantRepository.findAll();
+            if (rows.isEmpty()) {
+                return Collections.emptyList();
+            }
+            List<Consultant> consultants = rows.stream()
+                    .map(ConsultantMapper::mapRowToConsultant)
+                    .collect(Collectors.toList());
+            mappingInitialized = true;
             return consultants;
         } else {
-            // Mapping is geïnitialiseerd, maar er zijn geen consultants om te mappen
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
-    private Consultant mapRowToConsultant(Map<String, Object> row) {
-        Consultant consultant = new Consultant();
-        consultant.setId((Long) row.get("id"));
-        consultant.setName((String) row.get("name"));
-        consultant.setEmail((String) row.get("email"));
 
-        return consultant;
-    }
 
     @Override
-    public boolean isDataSaved() {
-        return false;
+    public boolean areEntitiesAlreadyMapped() {
+        boolean isConsultantMigrated =  consultantRepository.count() > 0;
+        if(isConsultantMigrated){
+            logger.info("Consultant-gegevens zijn reeds gemigreerd.");
+        }
+        return isConsultantMigrated;
+    }
+
+
+
+
+
+    @Override
+    public void saveAllMigratedData(List<Consultant> consultants) {
+        for(Consultant c : consultants){
+            logger.info("Consultant met ID " + c.getId() + " wordt opgeslagen.");
+        }
+        consultantRepository.saveAll(consultants);
     }
 }
-*/

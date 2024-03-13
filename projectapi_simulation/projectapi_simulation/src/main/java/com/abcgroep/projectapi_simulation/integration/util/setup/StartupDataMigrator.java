@@ -1,8 +1,5 @@
 package com.abcgroep.projectapi_simulation.integration.util.setup;
 
-import com.abcgroep.projectapi_simulation.application.entities.Consultant;
-import com.abcgroep.projectapi_simulation.application.repositories.ConsultantRepository;
-import com.abcgroep.projectapi_simulation.integration.util.mapper.implementations.ConsultantMappingServiceImpl;
 import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,26 +9,22 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class StartupDataMigrator{
-
-
-    private final ConsultantMappingServiceImpl consultantMappingService;
-    private final ConsultantRepository studentRepository;
+public class StartupDataMigrator {
     @Autowired
-    public StartupDataMigrator(ConsultantMappingServiceImpl consultantMappingService, ConsultantRepository studentRepository) {
-        this.consultantMappingService = consultantMappingService;
-        this.studentRepository = studentRepository;
-    }
+    private List<GenericMappingService<?>> mappingServices;
 
     @EventListener(ApplicationReadyEvent.class)
     public void migrateDataOnStartup() {
-        List<Consultant> migratedStudents = consultantMappingService.mapData();
-        saveAllMigratedConsultants(migratedStudents);
-
-
+        for (GenericMappingService<?> service : mappingServices) {
+            migrateServiceData(service);
+        }
     }
 
-    private void saveAllMigratedConsultants(List<Consultant> migratedStudents){
-        studentRepository.saveAll(migratedStudents);
+    @SuppressWarnings("unchecked")
+    private <T> void migrateServiceData(GenericMappingService<T> service) {
+        List<T> migratedData = service.mapData();
+        if (!migratedData.isEmpty()) {
+            service.saveAllMigratedData(migratedData);
+        }
     }
 }

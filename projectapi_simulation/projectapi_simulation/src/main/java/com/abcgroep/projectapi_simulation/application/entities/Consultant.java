@@ -61,4 +61,14 @@ public class Consultant {
     public void setProjects(Set<Project> projects) {
         this.projects = projects;
     }
+
+    @Override
+    public String toString() {
+        return "Consultant{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", projects=" + projects +
+                '}';
+    }
 }
