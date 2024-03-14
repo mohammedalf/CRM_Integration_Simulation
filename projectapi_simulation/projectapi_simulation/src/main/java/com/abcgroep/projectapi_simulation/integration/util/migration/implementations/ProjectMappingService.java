@@ -1,11 +1,11 @@
-package com.abcgroep.projectapi_simulation.integration.util.mapper.implementations;
+package com.abcgroep.projectapi_simulation.integration.util.migration.implementations;
 
 
 
 import com.abcgroep.projectapi_simulation.application.entities.Project;
 import com.abcgroep.projectapi_simulation.application.repositories.ProjectRepository;
 import com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers.ProjectMapper;
-import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
+import com.abcgroep.projectapi_simulation.integration.util.migration.interfaces.GenericMappingService;
 import com.abcgroep.projectapi_simulation.integration.util.repositories.ExternalEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +70,17 @@ public class ProjectMappingService implements GenericMappingService<Project> {
         projectRepository.saveAll(projects);
     }
 
+    @Override
+    public List<Project> mapEntitysSinceLastId(Long lastMappedId) {
+//         List<Map<String, Object>> rows = externalProjectRepository.findSinceId(lastMappedId);
+        List<Map<String, Object>> rows = externalProjectRepository.findSinceId(lastMappedId);
 
+        if (rows.isEmpty()) {
+            return Collections.emptyList();
+        }
 
+        return rows.stream()
+                .map(ProjectMapper::mapRowToProject)
+                .collect(Collectors.toList());
+    }
 }

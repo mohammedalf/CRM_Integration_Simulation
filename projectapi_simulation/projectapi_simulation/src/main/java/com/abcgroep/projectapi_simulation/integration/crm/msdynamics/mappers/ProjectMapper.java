@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class ProjectMapper {
     public static Project mapRowToProject(Map<String, Object> row) {
         Project project = new Project();
-        project.setId((Long) row.get("id"));
+        project.setExternalProjectId((Long) row.get("id"));
         project.setName((String) row.get("name"));
         project.setDescription((String) row.get("description"));
 

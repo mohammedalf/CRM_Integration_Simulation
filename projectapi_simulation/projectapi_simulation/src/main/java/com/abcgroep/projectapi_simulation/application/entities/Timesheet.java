@@ -21,17 +21,29 @@ public class Timesheet {
     private LocalDate date;
     private Integer hours;
     private String description;
+    private Long externalTimesheetId;
 
     public Timesheet() {
 
     }
 
+/*
     public Timesheet(Consultant consultant, Project project, LocalDate date, Integer hours, String description) {
         this.consultant = consultant;
         this.project = project;
         this.date = date;
         this.hours = hours;
         this.description = description;
+    }
+*/
+
+    public Timesheet(Consultant consultant, Project project, LocalDate date, Integer hours, String description, Long externalTimesheetId) {
+        this.consultant = consultant;
+        this.project = project;
+        this.date = date;
+        this.hours = hours;
+        this.description = description;
+        this.externalTimesheetId = externalTimesheetId;
     }
 
     public Long getId() {
@@ -80,5 +92,13 @@ public class Timesheet {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getExternalTimesheetId() {
+        return externalTimesheetId;
+    }
+
+    public void setExternalTimesheetId(Long externalTimesheetId) {
+        this.externalTimesheetId = externalTimesheetId;
     }
 }

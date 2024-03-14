@@ -1,6 +1,6 @@
 package com.abcgroep.projectapi_simulation.integration.util.setup;
 
-import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
+import com.abcgroep.projectapi_simulation.integration.util.migration.interfaces.GenericMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

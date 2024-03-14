@@ -16,6 +16,7 @@ public class Project {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long externalProjectId;
 
     @ManyToMany
     @JoinTable(
@@ -29,12 +30,20 @@ public class Project {
 
     }
 
-    public Project(String name, String description, LocalDate startDate, LocalDate endDate) {
+/*    public Project(String name, String description, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.consultants = new HashSet<>();
+    }*/
+
+    public Project(String name, String description, LocalDate startDate, LocalDate endDate, Long externalProjectId) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.externalProjectId = externalProjectId;
     }
 
     public Long getId() {
@@ -83,5 +92,13 @@ public class Project {
 
     public void setConsultants(Set<Consultant> consultants) {
         this.consultants = consultants;
+    }
+
+    public Long getExternalProjectId() {
+        return externalProjectId;
+    }
+
+    public void setExternalProjectId(Long externalProjectId) {
+        this.externalProjectId = externalProjectId;
     }
 }

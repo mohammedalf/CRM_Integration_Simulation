@@ -1,11 +1,10 @@
-package com.abcgroep.projectapi_simulation.integration.util.mapper.implementations;
+package com.abcgroep.projectapi_simulation.integration.util.migration.implementations;
 
 
-import com.abcgroep.projectapi_simulation.application.entities.Project;
 import com.abcgroep.projectapi_simulation.application.entities.Timesheet;
 import com.abcgroep.projectapi_simulation.application.repositories.TimesheetRepository;
 import com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers.TimesheetMapper;
-import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
+import com.abcgroep.projectapi_simulation.integration.util.migration.interfaces.GenericMappingService;
 import com.abcgroep.projectapi_simulation.integration.util.repositories.ExternalEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +67,15 @@ public class TimesheetMappingService implements GenericMappingService<Timesheet>
         return isTimesheetMigrated;
     }
 
+    @Override
+    public List<Timesheet> mapEntitysSinceLastId(Long lastMappedId) {
+        List<Map<String, Object>> rows = externalTimesheetRepository.findSinceId(lastMappedId);
 
-
+        if (rows.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return rows.stream()
+                .map(TimesheetMapper::mapRowToTimesheet)
+                .collect(Collectors.toList());
+    }
 }

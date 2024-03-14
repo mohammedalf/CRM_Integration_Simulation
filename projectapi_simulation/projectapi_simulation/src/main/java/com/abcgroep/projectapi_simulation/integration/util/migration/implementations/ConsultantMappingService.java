@@ -1,9 +1,9 @@
-package com.abcgroep.projectapi_simulation.integration.util.mapper.implementations;
+package com.abcgroep.projectapi_simulation.integration.util.migration.implementations;
 
 import com.abcgroep.projectapi_simulation.application.entities.Consultant;
 import com.abcgroep.projectapi_simulation.application.repositories.ConsultantRepository;
 import com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers.ConsultantMapper;
-import com.abcgroep.projectapi_simulation.integration.util.mapper.interfaces.GenericMappingService;
+import com.abcgroep.projectapi_simulation.integration.util.migration.interfaces.GenericMappingService;
 import com.abcgroep.projectapi_simulation.integration.util.repositories.ExternalEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,5 +68,26 @@ public class ConsultantMappingService implements GenericMappingService<Consultan
             logger.info("Consultant met ID " + c.getId() + " wordt opgeslagen.");
         }
         consultantRepository.saveAll(consultants);
+    }
+
+    @Override
+    public List<Consultant> mapEntitysSinceLastId(Long lastMappedId) {
+        // Roep de externe repository aan om alleen nieuwe gegevens op te halen die na lastMappedId zijn toegevoegd
+//        List<Map<String, Object>> rows = externalConsultantRepository.findSinceId(lastMappedId);
+
+        // Map de opgehaalde gegevens naar StudentDTO's
+//        List<Consultant> dtos = mapToDTOs(rows);
+
+        // Map de DTO's naar Student-entiteiten
+//        return mapDTOsToStudents(dtos);
+        List<Map<String, Object>> rows = externalConsultantRepository.findSinceId(lastMappedId);
+
+        if (rows.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return rows.stream()
+                .map(ConsultantMapper::mapRowToConsultant)
+                .collect(Collectors.toList());
     }
 }

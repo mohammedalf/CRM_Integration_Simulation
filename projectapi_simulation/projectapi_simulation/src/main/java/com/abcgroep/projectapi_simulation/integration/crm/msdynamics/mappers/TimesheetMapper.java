@@ -9,7 +9,7 @@ public class TimesheetMapper {
 
     public static Timesheet mapRowToTimesheet(Map<String, Object> row) {
         Timesheet timesheet = new Timesheet();
-        timesheet.setId((Long) row.get("id"));
+        timesheet.setExternalTimesheetId((Long) row.get("id"));
         timesheet.setDescription((String) row.get("description"));
         timesheet.setHours((Integer) row.get("hours"));
 

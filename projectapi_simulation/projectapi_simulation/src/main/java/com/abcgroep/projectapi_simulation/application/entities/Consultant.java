@@ -15,6 +15,8 @@ public class Consultant {
     private String name;
     private String email;
 
+    private Long externalConsultantId;
+
     @ManyToMany(mappedBy = "consultants")
     @JsonIgnore
     private Set<Project> projects = new HashSet<>();
@@ -23,12 +25,19 @@ public class Consultant {
 
     }
 
-    public Consultant(String name, String email) {
+    public Consultant(String name, String email, Long externalConsultantId) {
+        this.name = name;
+        this.email = email;
+        this.externalConsultantId = externalConsultantId;
+        this.projects = new HashSet<>();
+    }
+
+/*    public Consultant(String name, String email) {
         this.name = name;
         this.email = email;
 
         this.projects = new HashSet<>();
-    }
+    }*/
 
     public Long getId() {
         return id;
@@ -54,6 +63,14 @@ public class Consultant {
         this.email = email;
     }
 
+    public Long getExternalConsultantId() {
+        return externalConsultantId;
+    }
+
+    public void setExternalConsultantId(Long externalConsultantId) {
+        this.externalConsultantId = externalConsultantId;
+    }
+
     public Set<Project> getProjects() {
         return projects;
     }
@@ -68,6 +85,7 @@ public class Consultant {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", externalConsultantId=" + externalConsultantId +
                 ", projects=" + projects +
                 '}';
     }
