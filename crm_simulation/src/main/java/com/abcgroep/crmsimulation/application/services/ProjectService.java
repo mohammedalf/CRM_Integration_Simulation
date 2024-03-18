@@ -48,6 +48,16 @@ public class ProjectService {
         project.setConsultants(consultants);
         return projectRepository.save(project);
     }
+
+    public Project updateConsultant(Long id, ProjectDTO projectDTO) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Project not found with id " + id));
+        project.setName(projectDTO.getName());
+        project.setDescription(projectDTO.getDescription());
+        project.setStartDate(projectDTO.getStartDate());
+        project.setEndDate(projectDTO.getEndDate());
+        return projectRepository.save(project);
+    }
 /*public Project assignConsultantsToProject(Long projectId, List<Long> consultantIds) {
     Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new RuntimeException("Project not found"));

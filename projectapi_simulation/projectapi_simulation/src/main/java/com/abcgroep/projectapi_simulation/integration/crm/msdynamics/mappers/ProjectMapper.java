@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ public class ProjectMapper {
         project.setExternalProjectId((Long) row.get("id"));
         project.setName((String) row.get("name"));
         project.setDescription((String) row.get("description"));
+        project.setLastModified((LocalDateTime) row.get("modified_on"));
 
         java.sql.Date startDateSql = (java.sql.Date) row.get("start_date");
         if (startDateSql != null) {

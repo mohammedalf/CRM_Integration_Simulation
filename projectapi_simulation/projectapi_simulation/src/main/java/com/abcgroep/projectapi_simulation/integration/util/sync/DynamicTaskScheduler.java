@@ -45,7 +45,7 @@ public class DynamicTaskScheduler {
 
         logger.info("Taak start uitvoering: {}", start);
         periodicDataSync.syncData();
-        //logger.info("Taak voltooid");
+
 
         ////uitvoeringstijd berekenen
         Instant end = Instant.now();

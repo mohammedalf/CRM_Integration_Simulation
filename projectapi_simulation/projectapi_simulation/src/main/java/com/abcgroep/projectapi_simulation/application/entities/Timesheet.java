@@ -3,6 +3,7 @@ package com.abcgroep.projectapi_simulation.application.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Timesheet {
@@ -22,6 +23,8 @@ public class Timesheet {
     private Integer hours;
     private String description;
     private Long externalTimesheetId;
+
+    private LocalDateTime lastModified;
 
     public Timesheet() {
 
@@ -96,6 +99,14 @@ public class Timesheet {
 
     public Long getExternalTimesheetId() {
         return externalTimesheetId;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public void setExternalTimesheetId(Long externalTimesheetId) {

@@ -3,6 +3,7 @@ package com.abcgroep.projectapi_simulation.application.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private Long externalProjectId;
+    private LocalDateTime lastModified;
 
     @ManyToMany
     @JoinTable(
@@ -92,6 +94,14 @@ public class Project {
 
     public void setConsultants(Set<Consultant> consultants) {
         this.consultants = consultants;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public Long getExternalProjectId() {

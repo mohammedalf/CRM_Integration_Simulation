@@ -3,6 +3,7 @@ package com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers;
 import com.abcgroep.projectapi_simulation.application.entities.Timesheet;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class TimesheetMapper {
@@ -12,7 +13,7 @@ public class TimesheetMapper {
         timesheet.setExternalTimesheetId((Long) row.get("id"));
         timesheet.setDescription((String) row.get("description"));
         timesheet.setHours((Integer) row.get("hours"));
-
+        timesheet.setLastModified((LocalDateTime) row.get("modified_on"));
 
         Object dateObject = row.get("date");
         if (dateObject instanceof java.sql.Date) {

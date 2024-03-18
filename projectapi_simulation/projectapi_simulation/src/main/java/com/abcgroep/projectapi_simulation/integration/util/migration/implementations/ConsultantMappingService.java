@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -21,13 +21,14 @@ import java.util.stream.Collectors;
 @Service
 public class ConsultantMappingService implements GenericMappingService<Consultant> {
     @Autowired
-    @Qualifier("externalConsultantService")
+    @Qualifier("externalConsultantRepository")
 
     private ExternalEntityRepository externalConsultantRepository;
     @Autowired
     private ConsultantRepository consultantRepository;
     private final Logger logger = LoggerFactory.getLogger(TimesheetMappingService.class);
     private boolean mappingInitialized = false;
+
 
 
 
@@ -61,33 +62,47 @@ public class ConsultantMappingService implements GenericMappingService<Consultan
 
 
 
+/*@Override
+public void saveAllMigratedData(List<Consultant> consultants) {
+    for(Consultant c : consultants){
+        logger.info("Consultant met ID " + c.getExternalConsultantId() + " wordt opgeslagen.");
+    }
+    consultantRepository.saveAll(consultants);
+}*/
 
     @Override
-    public void saveAllMigratedData(List<Consultant> consultants) {
-        for(Consultant c : consultants){
-            logger.info("Consultant met ID " + c.getId() + " wordt opgeslagen.");
-        }
-        consultantRepository.saveAll(consultants);
+    public void updateData(List<Consultant> consultants) {
+        for (Consultant consultant : consultants) {
+            Optional<Consultant> existingConsultant = consultantRepository.findByExternalConsultantId(consultant.getExternalConsultantId());
+            if (existingConsultant.isPresent()) {
+
+                Consultant updatedConsultant = existingConsultant.get();
+                updatedConsultant.setName(consultant.getName());
+                updatedConsultant.setEmail(consultant.getEmail());
+
+                logger.info("Consultant met ID " + updatedConsultant.getExternalConsultantId() + " wordt bijgewerkt.");
+                consultantRepository.save(updatedConsultant);
+            } else {
+                consultantRepository.save(consultant);
+            }
+
     }
+
+    }
+
+
 
     @Override
-    public List<Consultant> mapEntitysSinceLastId(Long lastMappedId) {
-        // Roep de externe repository aan om alleen nieuwe gegevens op te halen die na lastMappedId zijn toegevoegd
-//        List<Map<String, Object>> rows = externalConsultantRepository.findSinceId(lastMappedId);
-
-        // Map de opgehaalde gegevens naar StudentDTO's
-//        List<Consultant> dtos = mapToDTOs(rows);
-
-        // Map de DTO's naar Student-entiteiten
-//        return mapDTOsToStudents(dtos);
-        List<Map<String, Object>> rows = externalConsultantRepository.findSinceId(lastMappedId);
-
-        if (rows.isEmpty()) {
-            return Collections.emptyList();
+    public List<Consultant> mapEntitiesSinceLastModified(LocalDateTime lastModifiedTime) {
+        Timestamp timestamp = Timestamp.valueOf(lastModifiedTime);
+        List<Map<String, Object>> rows = externalConsultantRepository.findModifiedSince(timestamp);
+        if (rows != null) {
+            return rows.stream()
+                    .map(ConsultantMapper::mapRowToConsultant)
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
         }
-
-        return rows.stream()
-                .map(ConsultantMapper::mapRowToConsultant)
-                .collect(Collectors.toList());
     }
+
 }

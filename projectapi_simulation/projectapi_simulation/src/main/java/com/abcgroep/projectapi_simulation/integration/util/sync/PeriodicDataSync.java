@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -43,77 +45,35 @@ public class PeriodicDataSync {
         syncTimesheetData();
     }
 
+
     private void syncConsultantData() {
-        syncGenericData(consultantMappingService, consultantRepository.findMaxExternalConsultantId(), "Consultant");
+        syncGenericData(consultantMappingService, "Consultant");
     }
 
     private void syncProjectData() {
-        syncGenericData(projectMappingService, projectRepository.findMaxExternalProjectId(), "Project");
+        syncGenericData(projectMappingService, "Project");
     }
 
     private void syncTimesheetData() {
-        syncGenericData(timesheetMappingService, timesheetRepository.findMaxExternalTimesheetId(), "Timesheet");
+        syncGenericData(timesheetMappingService, "Timesheet");
     }
 
-    private <T> void syncGenericData(GenericMappingService<T> mappingService, Long lastMappedId, String entityName) {
-        logger.info("Last mapped external ID for {}: {}", entityName, lastMappedId);
 
-        List<T> newEntities = mappingService.mapEntitysSinceLastId(lastMappedId);
-        if (!newEntities.isEmpty()) {
-            mappingService.saveAllMigratedData(newEntities);
-            logger.info("{} new {} entities have been synchronized and saved.", newEntities.size(), entityName);
+
+
+    private <T> void syncGenericData(GenericMappingService<T> mappingService, String entityName) {
+        LocalDateTime lastModifiedTime = SyncTimestampManager.getLastModifiedTime(entityName);
+        logger.info("Last modified time for {}: {}", entityName, lastModifiedTime);
+
+        List<T> newOrUpdatedEntities = mappingService.mapEntitiesSinceLastModified(lastModifiedTime);
+        if (!newOrUpdatedEntities.isEmpty()) {
+            mappingService.updateData(newOrUpdatedEntities);
+            logger.info("{} new or updated {} entities have been synchronized and saved.", newOrUpdatedEntities.size(), entityName);
+            SyncTimestampManager.updateLastModifiedTime(entityName, LocalDateTime.now());
         } else {
-            logger.info("No new {} entities to synchronize.", entityName);
+            logger.info("No new or updated {} entities to synchronize based on last modified time.", entityName);
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    public void syncConsultantData() {
-        logger.info("Periodieke synchronisatie gestart...");
-        Long lastMappedExternalId = consultantRepository.findMaxExternalConsultantId();
-        logger.info("Laatste gemapte externe consultant-ID: {}", lastMappedExternalId);
-
-        //nieuwe studenten
-        List<Consultant> newConsultants = consultantMappingService.mapEntitysSinceLastId(lastMappedExternalId);
-//        logger.info("Aantal nieuwe studenten opgehaald: {}", newConsultants.size());
-        if (!newConsultants.isEmpty()) {
-            consultantMappingService.saveAllMigratedData(newConsultants);
-            logger.info("Synchronized and saved {} new Consultants.", newConsultants.size());
-        } else {
-            logger.info("No new Consultants to synchronize.");
-        }
-
-    }
-
-    public void syncData() {
-        syncConsultantData();
-
-    }*/
-
-/*    private <T> void syncEntity(GenericMappingService<T> mappingService) {
-        if (!mappingService.areEntitiesAlreadyMapped()) {
-            List<T> entities = mappingService.mapData();
-            mappingService.saveAllMigratedData(entities);
-            logger.info("{} entities synchronized.", entities.getClass().getSimpleName()); // This line may need adjustment
-        }
-    }*/
 }

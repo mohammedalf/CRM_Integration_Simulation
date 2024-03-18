@@ -25,6 +25,12 @@ public class ConsultantController {
         return ResponseEntity.ok(newConsultant);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Consultant> updateConsultant(@PathVariable Long id, @RequestBody ConsultantDTO consultantDTO) {
+        Consultant updatedConsultant = consultantService.updateConsultant(id, consultantDTO);
+        return ResponseEntity.ok(updatedConsultant);
+    }
+
     @PostMapping("/{projectId}/assign-consultants")
     public ResponseEntity<Project> assignConsultantsToProject(@PathVariable Long projectId, @RequestBody ConsultantsToProjectDTO consultantsToProjectDTO) {
         Project updatedProject = projectService.assignConsultantsToProject(projectId, consultantsToProjectDTO.getConsultantIds());

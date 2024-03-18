@@ -2,6 +2,7 @@ package com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers;
 
 import com.abcgroep.projectapi_simulation.application.entities.Consultant;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class ConsultantMapper {
@@ -10,6 +11,7 @@ public class ConsultantMapper {
         consultant.setExternalConsultantId((Long) row.get("id"));
         consultant.setName((String) row.get("name"));
         consultant.setEmail((String) row.get("email"));
+        consultant.setLastModified((LocalDateTime) row.get("modified_on"));
         return consultant;
     }
 

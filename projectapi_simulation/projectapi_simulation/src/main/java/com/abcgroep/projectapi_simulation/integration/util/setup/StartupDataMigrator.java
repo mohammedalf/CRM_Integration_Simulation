@@ -24,7 +24,8 @@ public class StartupDataMigrator {
     private <T> void migrateServiceData(GenericMappingService<T> service) {
         List<T> migratedData = service.mapData();
         if (!migratedData.isEmpty()) {
-            service.saveAllMigratedData(migratedData);
+//            service.saveAllMigratedData(migratedData);
+            service.updateData(migratedData);
         }
     }
 }

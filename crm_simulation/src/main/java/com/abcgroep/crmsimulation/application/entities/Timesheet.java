@@ -3,6 +3,7 @@ package com.abcgroep.crmsimulation.application.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Timesheet {
@@ -21,6 +22,12 @@ public class Timesheet {
     private LocalDate date;
     private Integer hours;
     private String description;
+    private LocalDateTime modifiedOn;
+    @PrePersist
+    @PreUpdate
+    private void onUpdate() {
+        modifiedOn = LocalDateTime.now();
+    }
 
     public Timesheet() {
 
@@ -44,6 +51,14 @@ public class Timesheet {
 
     public Consultant getConsultant() {
         return consultant;
+    }
+
+    public LocalDateTime getModifiedOn() {
+        return modifiedOn;
+    }
+
+    public void setModifiedOn(LocalDateTime modifiedOn) {
+        this.modifiedOn = modifiedOn;
     }
 
     public void setConsultant(Consultant consultant) {

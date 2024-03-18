@@ -1,7 +1,9 @@
 package com.abcgroep.crmsimulation.application.controllers;
 
+
 import com.abcgroep.crmsimulation.application.dtos.ConsultantsToProjectDTO;
 import com.abcgroep.crmsimulation.application.dtos.ProjectDTO;
+
 import com.abcgroep.crmsimulation.application.entities.Project;
 import com.abcgroep.crmsimulation.application.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,13 @@ public class ProjectController {
     @PostMapping("/{projectId}/assign-consultants")
     public ResponseEntity<Project> assignConsultantsToProject(@PathVariable Long projectId, @RequestBody ConsultantsToProjectDTO consultantsToProjectDTO) {
         Project updatedProject = projectService.assignConsultantsToProject(projectId, consultantsToProjectDTO.getConsultantIds());
+        return ResponseEntity.ok(updatedProject);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Project> updateConsultant(@PathVariable Long id, @RequestBody ProjectDTO projectDTO) {
+        Project updatedProject = projectService.updateConsultant(id, projectDTO);
         return ResponseEntity.ok(updatedProject);
     }
 }

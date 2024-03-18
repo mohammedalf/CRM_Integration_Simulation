@@ -3,6 +3,7 @@ package com.abcgroep.crmsimulation.application.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,13 @@ public class Project {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private LocalDateTime modifiedOn;
+    @PrePersist
+    @PreUpdate
+    private void onUpdate() {
+        modifiedOn = LocalDateTime.now();
+    }
 
     @ManyToMany
     @JoinTable(
@@ -35,6 +43,14 @@ public class Project {
         this.startDate = startDate;
         this.endDate = endDate;
         this.consultants = new HashSet<>();
+    }
+
+    public LocalDateTime getModifiedOn() {
+        return modifiedOn;
+    }
+
+    public void setModifiedOn(LocalDateTime modifiedOn) {
+        this.modifiedOn = modifiedOn;
     }
 
     public Long getId() {

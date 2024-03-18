@@ -3,6 +3,7 @@ package com.abcgroep.crmsimulation.application.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +15,12 @@ public class Consultant {
 
     private String name;
     private String email;
+    private LocalDateTime modifiedOn;
+    @PrePersist
+    @PreUpdate
+    private void onUpdate() {
+        modifiedOn = LocalDateTime.now();
+    }
 
     @ManyToMany(mappedBy = "consultants")
     @JsonIgnore
@@ -28,6 +35,14 @@ public class Consultant {
         this.email = email;
 
         this.projects = new HashSet<>();
+    }
+
+    public LocalDateTime getModifiedOn() {
+        return modifiedOn;
+    }
+
+    public void setModifiedOn(LocalDateTime modifiedOn) {
+        this.modifiedOn = modifiedOn;
     }
 
     public Long getId() {

@@ -3,6 +3,7 @@ package com.abcgroep.projectapi_simulation.application.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ public class Consultant {
     private String email;
 
     private Long externalConsultantId;
+    private LocalDateTime lastModified;
 
     @ManyToMany(mappedBy = "consultants")
     @JsonIgnore
@@ -69,6 +71,14 @@ public class Consultant {
 
     public void setExternalConsultantId(Long externalConsultantId) {
         this.externalConsultantId = externalConsultantId;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public Set<Project> getProjects() {

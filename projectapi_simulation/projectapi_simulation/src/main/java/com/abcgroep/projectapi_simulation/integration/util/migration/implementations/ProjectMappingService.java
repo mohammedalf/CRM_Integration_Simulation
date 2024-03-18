@@ -2,6 +2,7 @@ package com.abcgroep.projectapi_simulation.integration.util.migration.implementa
 
 
 
+
 import com.abcgroep.projectapi_simulation.application.entities.Project;
 import com.abcgroep.projectapi_simulation.application.repositories.ProjectRepository;
 import com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers.ProjectMapper;
@@ -13,16 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ProjectMappingService implements GenericMappingService<Project> {
 
     @Autowired
-    @Qualifier("externalProjectService")
+    @Qualifier("externalProjectRepository")
     private ExternalEntityRepository externalProjectRepository;
 
     @Autowired
@@ -62,25 +63,49 @@ public class ProjectMappingService implements GenericMappingService<Project> {
         return isProjectMigrated;
     }
 
+/*@Override
+public void saveAllMigratedData(List<Project> projects) {
+    for(Project p : projects){
+        logger.info("Timesheet met ID " + p.getExternalProjectId() + " wordt opgeslagen.");
+    }
+    projectRepository.saveAll(projects);
+}*/
+
     @Override
-    public void saveAllMigratedData(List<Project> projects) {
-        for(Project p : projects){
-            logger.info("Timesheet met ID " + p.getId() + " wordt opgeslagen.");
+    public void updateData(List<Project> projects) {
+        for (Project project : projects) {
+            Optional<Project> existingProject = projectRepository.findByExternalProjectId(project.getExternalProjectId());
+            if (existingProject.isPresent()) {
+
+                Project updatedProject = existingProject.get();
+                updatedProject.setName(project.getName());
+                updatedProject.setDescription(project.getDescription());
+                updatedProject.setStartDate(project.getStartDate());
+                updatedProject.setEndDate(project.getEndDate());
+
+                logger.info("Project met ID " + updatedProject.getExternalProjectId() + " wordt bijgewerkt.");
+                projectRepository.save(updatedProject);
+            } else {
+
+                projectRepository.save(project);
+            }
+
         }
-        projectRepository.saveAll(projects);
     }
 
+
+
     @Override
-    public List<Project> mapEntitysSinceLastId(Long lastMappedId) {
-//         List<Map<String, Object>> rows = externalProjectRepository.findSinceId(lastMappedId);
-        List<Map<String, Object>> rows = externalProjectRepository.findSinceId(lastMappedId);
-
-        if (rows.isEmpty()) {
-            return Collections.emptyList();
+    public List<Project> mapEntitiesSinceLastModified(LocalDateTime lastModifiedTime) {
+        Timestamp timestamp = Timestamp.valueOf(lastModifiedTime);
+        List<Map<String, Object>> rows = externalProjectRepository.findModifiedSince(timestamp);
+        if (rows != null){
+            return rows.stream()
+                    .map(ProjectMapper::mapRowToProject)
+                    .collect(Collectors.toList());
         }
-
-        return rows.stream()
-                .map(ProjectMapper::mapRowToProject)
-                .collect(Collectors.toList());
+        else{
+            return new ArrayList<>();
+        }
     }
 }

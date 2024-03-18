@@ -13,15 +13,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class TimesheetMappingService implements GenericMappingService<Timesheet> {
     @Autowired
-    @Qualifier("externalTimesheetService")
+    @Qualifier("externalTimesheetRepository")
     private ExternalEntityRepository externalTimesheetRepository;
 
     @Autowired
@@ -47,15 +47,33 @@ public class TimesheetMappingService implements GenericMappingService<Timesheet>
         }
     }
 
-    @Override
+/*    @Override
     public void saveAllMigratedData(List<Timesheet> timesheets) {
         for(Timesheet t : timesheets){
-            logger.info("Timesheet met ID " + t.getId() + " wordt opgeslagen.");
+            logger.info("Timesheet met ID " + t.getExternalTimesheetId() + " wordt opgeslagen.");
         }
         timesheetRepository.saveAll(timesheets);
+    }*/
+
+    @Override
+    public void updateData(List<Timesheet> timesheets) {
+        for (Timesheet timesheet : timesheets) {
+            Optional<Timesheet> existingTimesheet = timesheetRepository.findByExternalTimesheetId(timesheet.getExternalTimesheetId());
+            if (existingTimesheet.isPresent()) {
+
+                Timesheet updatedTimesheet = existingTimesheet.get();
+                updatedTimesheet.setDate(timesheet.getDate());
+                updatedTimesheet.setHours(timesheet.getHours());
+                updatedTimesheet.setDescription(timesheet.getDescription());
+
+                logger.info("Timesheet met ID " + updatedTimesheet.getExternalTimesheetId() + " wordt bijgewerkt.");
+                timesheetRepository.save(updatedTimesheet);
+            } else {
+                timesheetRepository.save(timesheet);
+            }
+
+        }
     }
-
-
 
     @Override
     public boolean areEntitiesAlreadyMapped() {
@@ -67,15 +85,18 @@ public class TimesheetMappingService implements GenericMappingService<Timesheet>
         return isTimesheetMigrated;
     }
 
-    @Override
-    public List<Timesheet> mapEntitysSinceLastId(Long lastMappedId) {
-        List<Map<String, Object>> rows = externalTimesheetRepository.findSinceId(lastMappedId);
 
-        if (rows.isEmpty()) {
-            return Collections.emptyList();
+
+    @Override
+    public List<Timesheet> mapEntitiesSinceLastModified(LocalDateTime lastModifiedTime) {
+        Timestamp timestamp = Timestamp.valueOf(lastModifiedTime);
+        List<Map<String, Object>> rows = externalTimesheetRepository.findModifiedSince(timestamp);
+        if (rows != null) {
+            return rows.stream()
+                    .map(TimesheetMapper::mapRowToTimesheet)
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
         }
-        return rows.stream()
-                .map(TimesheetMapper::mapRowToTimesheet)
-                .collect(Collectors.toList());
     }
 }
