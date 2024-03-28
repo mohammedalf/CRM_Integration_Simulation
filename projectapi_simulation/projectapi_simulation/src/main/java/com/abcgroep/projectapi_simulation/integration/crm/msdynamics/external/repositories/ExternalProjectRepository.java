@@ -40,4 +40,12 @@ public class ExternalProjectRepository implements ExternalEntityRepository {
         String sql = String.format("SELECT * FROM %s.project WHERE modified_on > ?", this.schema);
         return jdbcTemplate.queryForList(sql, lastModifiedTime);
     }
+
+
+    // In ExternalProjectRepository
+    public List<Map<String, Object>> findProjectConsultantRelationships() {
+        String sql = String.format("SELECT project_id, consultant_id FROM %s.project_consultant", this.schema);
+        return jdbcTemplate.queryForList(sql);
+    }
+
 }

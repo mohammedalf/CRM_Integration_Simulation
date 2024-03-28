@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -30,5 +32,13 @@ public class ProjectController {
     public ResponseEntity<Project> assignConsultantsToProject(@PathVariable Long projectId, @RequestBody ConsultantsToProjectDTO consultantsToProjectDTO) {
         Project updatedProject = projectService.assignConsultantsToProject(projectId, consultantsToProjectDTO.getConsultantIds());
         return ResponseEntity.ok(updatedProject);
+    }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Project>> getProjectsByConsultant(@PathVariable Long userId) {
+        List<Project> projects = projectService.findProjectsByConsultantId(userId);
+        if (projects.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(projects);
     }
 }

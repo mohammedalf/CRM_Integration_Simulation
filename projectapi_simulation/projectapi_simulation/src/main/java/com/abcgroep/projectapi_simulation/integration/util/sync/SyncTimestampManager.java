@@ -8,7 +8,6 @@ public class SyncTimestampManager {
     private static final Map<String, LocalDateTime> lastModifiedTimes = new HashMap<>();
 
     public static LocalDateTime getLastModifiedTime(String entityType) {
-        // Retourneert de opgeslagen tijd, of een standaardtijd als er nog geen tijd is opgeslagen
         return lastModifiedTimes.getOrDefault(entityType, LocalDateTime.MIN);
     }
 

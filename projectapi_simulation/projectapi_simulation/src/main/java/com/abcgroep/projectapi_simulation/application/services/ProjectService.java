@@ -47,5 +47,9 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
+    public List<Project> findProjectsByConsultantId(Long userId) {
+        return projectRepository.findProjectsByConsultantId(userId);
+    }
+
 
 }

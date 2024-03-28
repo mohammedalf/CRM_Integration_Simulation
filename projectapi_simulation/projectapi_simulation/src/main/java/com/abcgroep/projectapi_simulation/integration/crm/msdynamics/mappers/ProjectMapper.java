@@ -1,16 +1,11 @@
 package com.abcgroep.projectapi_simulation.integration.crm.msdynamics.mappers;
 
-import com.abcgroep.projectapi_simulation.application.entities.Consultant;
 import com.abcgroep.projectapi_simulation.application.entities.Project;
-import com.abcgroep.projectapi_simulation.application.repositories.ConsultantRepository;
-import com.abcgroep.projectapi_simulation.application.repositories.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectMapper {
